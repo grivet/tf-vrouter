@@ -217,9 +217,10 @@ vr_offloads_flow_del(struct vr_flow_entry * fe)
 
     if(oflow->flow_handle) {
         ret = vr_offload_flow_destroy(oflow);
-        if (!ret)
+        if (!ret) {
             memset(oflow, 0, sizeof(*oflow));
-        else
+            fe->fe_flags &= ~VR_FLOW_FLAG_OFFLOADED;
+        } else
             vr_printf("offload: Failed to destroy flow ID %u\n", oflow->fe_index);
     }
 
@@ -255,6 +256,7 @@ vr_offloads_flow_set(struct vr_flow_entry * fe, unsigned int fe_index,
         ret = vr_offload_flow_destroy(oflow);
         if (!ret) {
             memset(oflow, 0, sizeof(*oflow));
+            fe->fe_flags &= ~VR_FLOW_FLAG_OFFLOADED;
         } else {
             vr_printf("offload: Failed to change flow ID %u\n", oflow->fe_index);
             return 0;
@@ -337,6 +339,8 @@ vr_offloads_flow_set(struct vr_flow_entry * fe, unsigned int fe_index,
     if (ret) {
         vr_printf("offload: Failed to create flow ID %u\n", fe_index);
         memset(oflow, 0, sizeof(*oflow));
+    } else {
+        fe->fe_flags |= VR_FLOW_FLAG_OFFLOADED;
     }
 
     return 0;

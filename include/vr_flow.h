@@ -27,6 +27,7 @@ typedef enum {
 #define VR_FLOW_RESP_FLAG_DELETED       0x0001
 
 #define VR_FLOW_FLAG_ACTIVE             0x0001
+#define VR_FLOW_FLAG_OFFLOADED          0x0002
 #define VR_FLOW_FLAG_MODIFIED           0x0100
 #define VR_FLOW_FLAG_NEW_FLOW           0x0200
 #define VR_FLOW_FLAG_EVICT_CANDIDATE    0x0400
