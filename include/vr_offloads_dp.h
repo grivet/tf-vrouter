@@ -56,7 +56,7 @@ static inline int vr_offload_flow_set(struct vr_flow_entry * fe,
     vr_rcu_read_lock();
     offload = vr_rcu_dereference(offload_ops);
     if (offload && offload->voo_flow_set)
-        return ret = offload->voo_flow_set(fe, fe_index, rfe);
+        ret = offload->voo_flow_set(fe, fe_index, rfe);
     vr_rcu_read_unlock();
 
     return ret;
