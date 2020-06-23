@@ -276,9 +276,25 @@ vr_offloads_flow_set(struct vr_flow_entry * fe, unsigned int fe_index,
     if (!snh)
         return -EINVAL;
 
-    if (snh->nh_type != NH_TUNNEL || !(snh->nh_flags & NH_FLAG_VALID))
-        /* Not a valid flow to be offloaded */
-        return 0;
+    /* In some cases, only the source next-hop of the reverse flow
+     * is a tunnel next-hop. In that case, use it for tunneling info.
+     */
+    if (snh->nh_type != NH_TUNNEL || !(snh->nh_flags & NH_FLAG_VALID)) {
+        if (!rfe && fe->fe_rflow >= 0)
+            rfe = vr_flow_get_entry(router, fe->fe_rflow);
+        if (!rfe)
+            /* Not a valid flow to be offloaded */
+            return 0;
+
+        snh = __vrouter_get_nexthop(router, rfe->fe_src_nh_index);
+        if (!snh)
+            /* Not a valid flow to be offloaded */
+            return 0;
+
+        if (snh->nh_type != NH_TUNNEL || !(snh->nh_flags & NH_FLAG_VALID))
+            /* Not a valid flow to be offloaded */
+            return 0;
+    }
 
     otag = (struct vr_offload_tag *)vr_btable_get(offload_tags, nh->nh_dev->vif_idx);
     if (!otag) {
